@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>DapoDapo - Chef Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.5;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 414px;
+      height: 896px;
+      background: #f1f5f9;
+      border-radius: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Status Bar */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 20px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+      background: white;
+    }
+
+    /* Header */
+    .app-header {
+      padding: 15px 20px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #4CAF50, #8BC34A);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .kitchen-switch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider { background-color: #4CAF50; }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Content Area */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      scrollbar-width: none;
+    }
+    .content::-webkit-scrollbar { display: none; }
+
+    /* Wallet Card */
+    .wallet-card {
+      background: linear-gradient(135deg, #2e7d32, #4CAF50);
+      border-radius: 20px;
+      padding: 24px;
+      color: white;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .wallet-card::after {
+      content: '';
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 100px;
+      height: 100px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+    }
+
+    .wallet-label {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 4px;
+    }
+
+    .wallet-balance {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .wallet-stats {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .w-stat-item h4 { font-size: 16px; font-weight: 600; }
+    .w-stat-item p { font-size: 12px; opacity: 0.8; }
+
+    .withdraw-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Quick Actions Grid */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      padding: 16px 10px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .action-btn:active { transform: scale(0.95); }
+
+    .action-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .action-icon.add { background: #e8f5e9; color: #4CAF50; }
+    .action-icon.menu { background: #fff3e0; color: #ff9800; }
+    .action-icon.reviews { background: #e3f2fd; color: #2196f3; }
+    .action-icon.insight { background: #f3e5f5; color: #9c27b0; }
+
+    .action-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    /* Orders Section */
+    .orders-section {
+      margin-bottom: 80px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .section-title { font-size: 18px; font-weight: 700; color: #1e293b; }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: white;
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748b;
+      border-radius: 10px;
+      cursor: pointer;
+      position: relative;
+    }
+    .tab.active {
+      background: #4CAF50;
+      color: white;
+    }
+    .tab-badge {
+      position: absolute;
+      top: 4px;
+      right: 15%;
+      background: #ef4444;
+      color: white;
+      font-size: 9px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid white;
+    }
+
+    /* New Card Style for Dishes */
+    .chef-order-card {
+      background: white;
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: flex;
+      gap: 12px;
+      animation: slideIn 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .co-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      background-size: cover;
+      background-position: center;
+      flex-shrink: 0;
+    }
+
+    .co-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .co-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+
+    .co-dish-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: #1e293b;
+    }
+
+    .co-price {
+        font-size: 12px;
+        color: #4CAF50;
+        font-weight: 600;
+        margin-top: 2px;
+    }
+
+    .co-time-badge {
+      font-size: 11px;
+      background: #fef3c7;
+      color: #d97706;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .co-time-badge.cooking {
+        background: #e3f2fd;
+        color: #2196f3;
+    }
+
+    .co-stats {
+      margin-top: 6px;
+    }
+
+    .co-stat-text {
+      font-size: 12px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .co-stat-highlight {
+      color: #4CAF50;
+      font-weight: 700;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      height: 6px;
+      background: #f1f5f9;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #4CAF50, #8BC34A);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    .co-actions { 
+      margin-top: 10px;
+      display: flex; 
+      gap: 8px; 
+    }
+
+    /* Order Item (for Ready Tab) */
+    .ready-item .co-content {
+      display: block;
+    }
+
+    .ready-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .ready-id { font-weight: 700; color: #1e293b; }
+    .ready-time { font-size: 12px; color: #64748b; }
+
+    .btn {
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      text-align: center;
+    }
+    .btn-primary { background: #4CAF50; color: white; }
+    .btn-outline { background: #f1f5f9; color: #475569; }
+    .btn-warning { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; }
+
+    /* Modal Styling */
+    .modal {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+    }
+    .modal.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+    .modal-content {
+        background: white;
+        width: 90%;
+        max-width: 380px;
+        max-height: 90vh; /* Handle small screens */
+        overflow-y: auto; /* Allow scrolling if content is too tall */
+        padding: 20px;
+        border-radius: 20px;
+        position: relative;
+    }
+    .modal-close {
+        position: absolute;
+        top: 15px; right: 15px;
+        font-size: 20px;
+        color: #94a3b8;
+        cursor: pointer;
+    }
+    .modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #1e293b;
+    }
+    .form-group {
+        margin-bottom: 16px;
+    }
+    .form-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 6px;
+        display: block;
+    }
+    .form-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 14px;
+        outline: none;
+    }
+    .form-input:focus { border-color: #4CAF50; }
+    .form-row { display: flex; gap: 12px; }
+
+    /* Image Upload Styling */
+    .image-upload-container {
+        width: 100%;
+        height: 140px;
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        overflow: hidden;
+        position: relative;
+    }
+    .image-upload-container:hover { background: #f1f5f9; }
+    .image-preview-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #64748b;
+        gap: 8px;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        pointer-events: none; /* Let clicks pass to container */
+    }
+    .preview-active {
+        background-size: cover;
+        background-position: center;
+    }
+    .preview-active .image-preview-content { display: none; }
+
+
+    /* List Styling for Modals */
+    .buyer-list-item, .review-item, .menu-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .buyer-info, .menu-info { display: flex; align-items: center; gap: 10px; }
+    .buyer-avatar { 
+        width: 36px; height: 36px; 
+        border-radius: 50%; 
+        background: #e2e8f0; 
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; font-weight: 600; color: #64748b;
+    }
+    .menu-thumb {
+        width: 44px; height: 44px;
+        border-radius: 10px;
+        background-size: cover;
+        background-position: center;
+    }
+    .buyer-name, .menu-name { font-size: 14px; font-weight: 600; color: #1e293b; }
+    .buyer-details, .menu-details { font-size: 12px; color: #64748b; }
+    .buyer-status { 
+        font-size: 11px; font-weight: 600; 
+        padding: 4px 8px; border-radius: 12px; 
+    }
+    .status-paid { background: #dcfce7; color: #166534; }
+
+    /* Review Styling */
+    .review-header { display: flex; gap: 8px; margin-bottom: 4px; }
+    .review-stars { color: #f59e0b; font-size: 12px; }
+    .review-text { font-size: 13px; color: #475569; line-height: 1.4; }
+
+    /* Insights Styling */
+    .chart-container {
+        margin-top: 10px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        height: 150px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .chart-bar-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+    .chart-bar {
+        width: 24px;
+        background: #4CAF50;
+        border-radius: 4px 4px 0 0;
+        transition: height 0.5s ease;
+    }
+    .chart-label {
+        font-size: 10px;
+        color: #64748b;
+    }
+    .insight-stat-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 16px;
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 12px;
+    }
+    .i-stat { text-align: center; }
+    .i-val { font-size: 18px; font-weight: 700; color: #1e293b; }
+    .i-lbl { font-size: 11px; color: #64748b; }
+
+
+    /* Bottom Nav (Chef Version) */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0 8px;
+      border-top: 1px solid #e2e8f0;
+      background: white;
+      margin-top: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 11px;
+      color: #94a3b8;
+      padding: 5px 15px;
+      text-decoration: none;
+    }
+    .nav-item.active { color: #2e7d32; }
+    .nav-icon { font-size: 20px; margin-bottom: 4px; }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <span>9:41</span>
+      <div><i class="fas fa-signal"></i> <i class="fas fa-wifi"></i> <i class="fas fa-battery-full"></i></div>
+    </div>
+
+    <!-- Header -->
+    <div class="app-header">
+      <div class="logo">
+        <div class="logo-icon">C</div>
+        <div class="header-title">Kitchen</div>
+      </div>
+      <div class="kitchen-switch">
+        <span id="kitchenStatusText" style="color:#4CAF50;">Online</span>
+        <label class="switch">
+          <input type="checkbox" id="kitchenToggle" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Scrollable Content -->
+    <div class="content">
+
+      <!-- Wallet Card -->
+      <div class="wallet-card">
+        <div class="wallet-label">Total Balance</div>
+        <div class="wallet-balance" id="walletBalanceDisplay">RM 482.50</div>
+
+        <div class="wallet-stats">
+          <div class="w-stat-item">
+            <h4>RM 124.00</h4>
+            <p>Today's Sales</p>
+          </div>
+          <div class="w-stat-item">
+            <h4>12</h4>
+            <p>Orders Done</p>
+          </div>
+        </div>
+
+        <button class="withdraw-btn" onclick="openWithdrawModal()">
+          <i class="fas fa-wallet"></i> Withdraw Funds
+        </button>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <div class="action-btn" onclick="openAddDishModal()">
+          <div class="action-icon add"><i class="fas fa-plus"></i></div>
+          <span class="action-label">Add Dish</span>
+        </div>
+        <div class="action-btn" onclick="openMenuModal()">
+          <div class="action-icon menu"><i class="fas fa-book-open"></i></div>
+          <span class="action-label">My Menu</span>
+        </div>
+        <div class="action-btn" onclick="openReviews()">
+          <div class="action-icon reviews"><i class="fas fa-star"></i></div>
+          <span class="action-label">Reviews</span>
+        </div>
+        <div class="action-btn" onclick="openInsights()">
+          <div class="action-icon insight"><i class="fas fa-chart-line"></i></div>
+          <span class="action-label">Insights</span>
+        </div>
+      </div>
+
+      <!-- Order Management -->
+      <div class="orders-section">
+        <div class="section-header">
+          <h3 class="section-title">Live Orders</h3>
+          <i class="fas fa-sync-alt" style="color:#94a3b8; cursor:pointer;" onclick="renderOrders(currentTab)"></i>
+        </div>
+
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('selling')" id="tab-selling">
+            Selling <div class="tab-badge" id="badge-selling">2</div>
+          </div>
+          <div class="tab" onclick="switchTab('cooking')" id="tab-cooking">
+            Cooking <div class="tab-badge" id="badge-cooking" style="display:none">0</div>
+          </div>
+          <div class="tab" onclick="switchTab('ready')" id="tab-ready">
+            Ready
+          </div>
+        </div>
+
+        <div id="ordersList">
+          <!-- Orders populated by JS -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Chef Bottom Nav -->
+    <div class="bottom-nav">
+      <a class="nav-item active" href="chef_home.html">
+        <div class="nav-icon"><i class="fas fa-columns"></i></div>
+        <div>Dashboard</div>
+      </a>
+      <a class="nav-item" href="profile.html">
+        <div class="nav-icon"><i class="fas fa-user-circle"></i></div>
+        <div>Profile</div>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Add Dish Modal -->
+  <div class="modal" id="addDishModal">
+    <div class="modal-content">
+        <div class="modal-close" onclick="closeAddDishModal()">&times;</div>
+        <h3 class="modal-title">Add New Dish</h3>
+
+        <!-- Image Upload -->
+        <div class="image-upload-container" id="imageUploadArea" onclick="document.getElementById('dishImageInput').click()">
+            <div class="image-preview-content">
+                <i class="fas fa-camera" style="font-size: 24px;"></i>
+                <span style="font-size: 13px;">Tap to add photo</span>
+            </div>
+            <input type="file" id="dishImageInput" hidden accept="image/*" onchange="previewImage(this)">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Dish Name</label>
+            <input type="text" class="form-input" id="dishName" placeholder="e.g. Curry Laksa">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-input" id="dishDesc" rows="3" placeholder="Describe the ingredients, taste..."></textarea>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group" style="flex:1">
+                <label class="form-label">Price (RM)</label>
+                <input type="number" class="form-input" id="dishPrice" placeholder="12.00" step="0.50">
+            </div>
+            <div class="form-group" style="flex:1">
+                <label class="form-label">Portions</label>
+                <input type="number" class="form-input" id="dishPortions" placeholder="20">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Order Deadline</label>
+            <input type="datetime-local" class="form-input" id="dishDeadline">
+        </div>
+
+        <button class="btn btn-primary" style="width:100%; padding:14px; font-size:16px;" onclick="saveNewDish()">Publish Dish</button>
+    </div>
+  </div>
+
+  <!-- View Orders Modal -->
+  <div class="modal" id="ordersModal">
+      <div class="modal-content">
+          <div class="modal-close" onclick="closeOrdersModal()">&times;</div>
+          <h3 class="modal-title" id="ordersModalTitle">Orders</h3>
+          <div id="buyersList">
+              <!-- Populated by JS -->
+          </div>
+          <button class="btn btn-outline" style="margin-top:20px; width:100%" onclick="closeOrdersModal()">Close</button>
+      </div>
+  </div>
+
+  <!-- Withdraw Modal -->
+  <div class="modal" id="withdrawModal">
+      <div class="modal-content">
+          <div class="modal-close" onclick="closeWithdrawModal()">&times;</div>
+          <h3 class="modal-title">Withdraw Funds</h3>
+          <div style="margin-bottom:20px; text-align:center; color:#64748b; font-size:13px;">
+              Available Balance: <span style="color:#1e293b; font-weight:700;" id="modalWalletBalance">RM 482.50</span>
+          </div>
+
+          <div class="form-group">
+              <label class="form-label">Amount (RM)</label>
+              <input type="number" class="form-input" id="withdrawAmount" placeholder="0.00">
+          </div>
+
+          <div class="form-group">
+              <label class="form-label">Bank / E-Wallet</label>
+              <select class="form-input">
+                  <option>Maybank</option>
+                  <option>CIMB Bank</option>
+                  <option>Touch 'n Go eWallet</option>
+                  <option>GrabPay</option>
+              </select>
+          </div>
+
+          <div class="form-group">
+              <label class="form-label">Account Number</label>
+              <input type="number" class="form-input" placeholder="Enter account number">
+          </div>
+
+          <button class="btn btn-primary" style="width:100%; padding:14px; margin-top:10px;" onclick="processWithdrawal()">Transfer Now</button>
+      </div>
+  </div>
+
+  <!-- My Menu Modal -->
+  <div class="modal" id="menuModal">
+      <div class="modal-content" style="max-height:85vh;">
+          <div class="modal-close" onclick="closeMenuModal()">&times;</div>
+          <h3 class="modal-title">My Dish Catalog</h3>
+
+          <div id="menuList">
+              <!-- Populated by JS -->
+          </div>
+
+          <button class="btn btn-outline" style="width:100%; margin-top:15px;" onclick="openAddDishModal(); closeMenuModal();">
+              <i class="fas fa-plus"></i> Add New Dish
+          </button>
+      </div>
+  </div>
+
+  <!-- Reviews Modal -->
+  <div class="modal" id="reviewsModal">
+      <div class="modal-content">
+          <div class="modal-close" onclick="closeReviews()">&times;</div>
+          <h3 class="modal-title">Customer Reviews</h3>
+          <div style="text-align:center; margin-bottom:20px;">
+              <h1 style="font-size:40px; color:#4CAF50; margin-bottom:4px;">4.8</h1>
+              <div style="color:#f59e0b">
+                  <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+              </div>
+              <div style="font-size:12px; color:#64748b">Based on 24 reviews</div>
+          </div>
+          <div class="reviews-list">
+              <div class="review-item">
+                  <div class="buyer-avatar">S</div>
+                  <div style="flex:1; margin-left:10px;">
+                      <div class="review-header">
+                          <span style="font-weight:600; font-size:13px;">Sarah Lim</span>
+                          <span class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></span>
+                      </div>
+                      <div class="review-text">Absolutely delicious! The sambal was perfect. Will order again!</div>
+                  </div>
+              </div>
+              <div class="review-item">
+                <div class="buyer-avatar">A</div>
+                <div style="flex:1; margin-left:10px;">
+                    <div class="review-header">
+                        <span style="font-weight:600; font-size:13px;">Ahmad Ali</span>
+                        <span class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></span>
+                    </div>
+                    <div class="review-text">Good portion size. Beef was tender.</div>
+                </div>
+            </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- Insights Modal -->
+  <div class="modal" id="insightsModal">
+      <div class="modal-content">
+          <div class="modal-close" onclick="closeInsights()">&times;</div>
+          <h3 class="modal-title">Weekly Insights</h3>
+
+          <div class="chart-container">
+              <div class="chart-bar-group"><div class="chart-bar" style="height:40%"></div><div class="chart-label">Mon</div></div>
+              <div class="chart-bar-group"><div class="chart-bar" style="height:60%"></div><div class="chart-label">Tue</div></div>
+              <div class="chart-bar-group"><div class="chart-bar" style="height:30%"></div><div class="chart-label">Wed</div></div>
+              <div class="chart-bar-group"><div class="chart-bar" style="height:80%"></div><div class="chart-label">Thu</div></div>
+              <div class="chart-bar-group"><div class="chart-bar" style="height:50%"></div><div class="chart-label">Fri</div></div>
+              <div class="chart-bar-group"><div class="chart-bar" style="height:90%"></div><div class="chart-label">Sat</div></div>
+              <div class="chart-bar-group"><div class="chart-bar" style="height:70%"></div><div class="chart-label">Sun</div></div>
+          </div>
+
+          <div class="insight-stat-row">
+              <div class="i-stat">
+                  <div class="i-val">RM 1,240</div>
+                  <div class="i-lbl">Total Revenue</div>
+              </div>
+              <div class="i-stat">
+                  <div class="i-val">84</div>
+                  <div class="i-lbl">Total Orders</div>
+              </div>
+          </div>
+
+          <h4 style="margin:20px 0 10px; font-size:14px; color:#64748b;">Top Dishes</h4>
+          <div class="buyer-list-item">
+              <span class="buyer-name">Nasi Lemak Special</span>
+              <span class="buyer-status status-paid">42 Sold</span>
+          </div>
+          <div class="buyer-list-item">
+            <span class="buyer-name">Beef Rendang</span>
+            <span class="buyer-status status-paid">28 Sold</span>
+        </div>
+      </div>
+  </div>
+
+  <script>
+    // Kitchen Toggle Logic
+    const kitchenToggle = document.getElementById('kitchenToggle');
+    const kitchenStatusText = document.getElementById('kitchenStatusText');
+
+    kitchenToggle.addEventListener('change', function() {
+      if(this.checked) {
+        kitchenStatusText.textContent = "Online";
+        kitchenStatusText.style.color = "#4CAF50";
+      } else {
+        kitchenStatusText.textContent = "Offline";
+        kitchenStatusText.style.color = "#94a3b8";
+      }
+    });
+
+    // Data - Selling (Active Dishes)
+    const dataModel = {
+      selling: [
+        { 
+          id: 1, 
+          name: "Nasi Lemak Special", 
+          image: "https://farahjeats.com/wp-content/uploads/2023/03/IMG_6683_jpg-1.jpg?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+          deadlineDisplay: "18:00 Today",
+          portionSet: 20,
+          portionSold: 12,
+          orderCount: 8, 
+          price: 12.00,
+          desc: "Fragrant rice cooked in coconut milk and pandan leaf.",
+          buyers: [
+              {name: "Azlan Shah", qty: 2, status: "Paid"},
+              {name: "Sarah Tan", qty: 1, status: "Paid"},
+              {name: "Mike L.", qty: 3, status: "Paid"},
+              {name: "Jenny K.", qty: 2, status: "Pending"},
+          ]
+        },
+        { 
+          id: 2, 
+          name: "Beef Rendang", 
+          image: "https://www.elmundoeats.com/wp-content/uploads/2023/04/A-bowl-of-beef-rendang.jpg?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+          deadlineDisplay: "17:30 Today",
+          portionSet: 10,
+          portionSold: 9,
+          orderCount: 5,
+          price: 18.50,
+          desc: "Rich and tender coconut beef stew.",
+          buyers: [
+              {name: "Farid", qty: 4, status: "Paid"},
+              {name: "Lisa", qty: 5, status: "Paid"}
+          ]
+        }
+      ],
+      cooking: [], 
+      ready: [
+        { id: "#8819", dish: "Roti Canai (x3)", time: "15 mins ago", driver: "Azman (Arr 2m)" }
+      ]
+    };
+
+    // Master Menu Catalog (Derived + Extra for demo)
+    const menuCatalog = [
+        ...dataModel.selling,
+        { id: 3, name: "Curry Laksa", price: 14.00, image: "https://images.unsplash.com/photo-1626082927389-6cd63a5e46d7?ixlib=rb-4.0.3", desc: "Spicy noodle soup with coconut milk." }
+    ];
+
+    let currentTab = 'selling';
+    let uploadedImage = null; // Store base64 image
+    let walletBalance = 482.50;
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      currentTab = tab;
+      renderOrders(tab);
+    }
+
+    // --- Modal Functions ---
+    function openAddDishModal() {
+        // Set default date to today for demo
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('dishDeadline').value = now.toISOString().slice(0,16);
+
+        document.getElementById('addDishModal').classList.add('active');
+    }
+
+    function closeAddDishModal() {
+        document.getElementById('addDishModal').classList.remove('active');
+    }
+
+    function openOrdersModal(dishId) {
+        const dish = dataModel.selling.find(d => d.id === dishId);
+        if(!dish) return;
+
+        document.getElementById('ordersModalTitle').textContent = `Orders for ${dish.name}`;
+        const list = document.getElementById('buyersList');
+
+        if(!dish.buyers || dish.buyers.length === 0) {
+            list.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:20px;">No buyers yet.</p>';
+        } else {
+            list.innerHTML = dish.buyers.map(b => `
+                <div class="buyer-list-item">
+                    <div class="buyer-info">
+                        <div class="buyer-avatar">${b.name.charAt(0)}</div>
+                        <div>
+                            <div class="buyer-name">${b.name}</div>
+                            <div class="buyer-details">${b.qty} portion${b.qty > 1 ? 's' : ''}</div>
+                        </div>
+                    </div>
+                    <span class="buyer-status status-paid">${b.status}</span>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('ordersModal').classList.add('active');
+    }
+
+    function closeOrdersModal() {
+        document.getElementById('ordersModal').classList.remove('active');
+    }
+
+    // --- Wallet & Menu Modals ---
+    function openWithdrawModal() {
+        document.getElementById('modalWalletBalance').textContent = `RM ${walletBalance.toFixed(2)}`;
+        document.getElementById('withdrawModal').classList.add('active');
+    }
+    function closeWithdrawModal() { document.getElementById('withdrawModal').classList.remove('active'); }
+
+    function processWithdrawal() {
+        const amount = parseFloat(document.getElementById('withdrawAmount').value);
+        if (!amount || amount <= 0) { alert('Please enter a valid amount'); return; }
+        if (amount > walletBalance) { alert('Insufficient balance!'); return; }
+
+        walletBalance -= amount;
+        document.getElementById('walletBalanceDisplay').textContent = `RM ${walletBalance.toFixed(2)}`;
+        alert(`Successfully transferred RM ${amount.toFixed(2)} to your account.`);
+        closeWithdrawModal();
+        document.getElementById('withdrawAmount').value = '';
+    }
+
+    function openMenuModal() {
+        const list = document.getElementById('menuList');
+        list.innerHTML = menuCatalog.map(dish => `
+            <div class="menu-list-item">
+                <div class="menu-info">
+                    <div class="menu-thumb" style="background-image:url('${dish.image}')"></div>
+                    <div>
+                        <div class="menu-name">${dish.name}</div>
+                        <div class="menu-details">RM ${parseFloat(dish.price).toFixed(2)}</div>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <label class="switch" style="transform:scale(0.8);">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <i class="fas fa-edit" style="color:#64748b; cursor:pointer;"></i>
+                </div>
+            </div>
+        `).join('');
+        document.getElementById('menuModal').classList.add('active');
+    }
+    function closeMenuModal() { document.getElementById('menuModal').classList.remove('active'); }
+
+    function openReviews() { document.getElementById('reviewsModal').classList.add('active'); }
+    function closeReviews() { document.getElementById('reviewsModal').classList.remove('active'); }
+
+    function openInsights() { document.getElementById('insightsModal').classList.add('active'); }
+    function closeInsights() { document.getElementById('insightsModal').classList.remove('active'); }
+
+
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                uploadedImage = e.target.result;
+                const area = document.getElementById('imageUploadArea');
+                area.style.backgroundImage = `url(${e.target.result})`;
+                area.classList.add('preview-active');
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function saveNewDish() {
+        const name = document.getElementById('dishName').value;
+        const price = document.getElementById('dishPrice').value;
+        const portions = document.getElementById('dishPortions').value;
+        const deadlineInput = document.getElementById('dishDeadline').value; // YYYY-MM-DDTHH:MM
+        const desc = document.getElementById('dishDesc').value;
+
+        if(!name || !portions || !deadlineInput || !price) {
+            alert("Please fill in all details (Name, Price, Portions, Deadline).");
+            return;
+        }
+
+        // Format Date nicely
+        const dateObj = new Date(deadlineInput);
+        const dateStr = dateObj.toLocaleDateString([], {month: 'short', day: 'numeric'});
+        const timeStr = dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const prettyDeadline = `${timeStr}, ${dateStr}`;
+
+        const newDish = {
+            id: Date.now(),
+            name: name,
+            image: uploadedImage || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+            deadlineDisplay: prettyDeadline,
+            portionSet: parseInt(portions),
+            portionSold: 0,
+            orderCount: 0,
+            price: parseFloat(price).toFixed(2),
+            desc: desc || "No description provided.",
+            buyers: []
+        };
+
+        dataModel.selling.unshift(newDish);
+        menuCatalog.push(newDish); // Add to master menu too
+        closeAddDishModal();
+
+        // Reset form
+        document.getElementById('dishName').value = '';
+        document.getElementById('dishPrice').value = '';
+        document.getElementById('dishPortions').value = '';
+        document.getElementById('dishDesc').value = '';
+        document.getElementById('imageUploadArea').style.backgroundImage = 'none';
+        document.getElementById('imageUploadArea').classList.remove('preview-active');
+        uploadedImage = null;
+
+        switchTab('selling'); // Refresh view
+    }
+
+    // --- Cooking Logic ---
+    function startCooking(id) {
+        // Find index
+        const index = dataModel.selling.findIndex(d => d.id === id);
+        if (index > -1) {
+            const dish = dataModel.selling[index];
+
+            // Remove from Selling
+            dataModel.selling.splice(index, 1);
+
+            // Add to Cooking (add status prop)
+            dish.status = "Cooking";
+            dish.startTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            dataModel.cooking.unshift(dish);
+
+            // Force Update UI
+            updateBadges();
+            switchTab('cooking'); // Auto switch to show user where it went
+        }
+    }
+
+    function renderOrders(tab) {
+      const list = document.getElementById('ordersList');
+      const data = dataModel[tab];
+
+      if (data.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-utensils" style="font-size: 40px; margin-bottom: 10px; color:#cbd5e1;"></i>
+            <p>No active items in ${tab}</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+
+      if (tab === 'selling') {
+        data.forEach(dish => {
+          const percent = (dish.portionSold / dish.portionSet) * 100;
+          const displayPrice = dish.price ? `RM ${parseFloat(dish.price).toFixed(2)}` : 'Set Price';
+
+          html += `
+            <div class="chef-order-card">
+              <div class="co-image" style="background-image: url('${dish.image}')"></div>
+              <div class="co-content">
+                <div class="co-header-row">
+                  <div class="co-dish-name">
+                    ${dish.name}
+                    <div class="co-price">${displayPrice}</div>
+                  </div>
+                  <div class="co-time-badge"><i class="far fa-clock"></i> ${dish.deadlineDisplay}</div>
+                </div>
+
+                <div class="co-stats">
+                  <div class="co-stat-text">
+                    <span class="co-stat-highlight">${dish.portionSold}/${dish.portionSet} Sold</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: ${percent}%"></div>
+                  </div>
+                </div>
+
+                <div class="co-actions">
+                  <button class="btn btn-outline" onclick="openOrdersModal(${dish.id})">View Orders</button>
+                  <button class="btn btn-primary" onclick="startCooking(${dish.id})">Start Cooking</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      } else if (tab === 'cooking') {
+         data.forEach(dish => {
+            html += `
+            <div class="chef-order-card">
+              <div class="co-image" style="background-image: url('${dish.image}')"></div>
+              <div class="co-content">
+                <div class="co-header-row">
+                  <div class="co-dish-name">${dish.name}</div>
+                  <div class="co-time-badge cooking">Cooking</div>
+                </div>
+
+                <div style="font-size:12px; color:#64748b; margin:6px 0;">
+                    Started at: ${dish.startTime || 'Just now'} <br>
+                    Preparing: ${dish.portionSold} portions
+                </div>
+
+                <div class="co-actions">
+                  <button class="btn btn-warning" onclick="alert('Moved to ready (Simulated)')"><i class="fas fa-check"></i> Finish Cooking</button>
+                </div>
+              </div>
+            </div>
+          `;
+         });
+      } else if (tab === 'ready') {
+        data.forEach(item => {
+          html += `
+            <div class="chef-order-card ready-item">
+              <div class="co-content">
+                <div class="ready-header">
+                  <span class="ready-id">${item.id}</span>
+                  <span class="ready-time">${item.time}</span>
+                </div>
+                <div style="font-weight:600; margin-bottom:8px;">${item.dish}</div>
+                <div style="font-size:12px; color:#64748b; background:#f1f5f9; padding:8px; border-radius:8px;">
+                   <i class="fas fa-motorcycle"></i> Driver: ${item.driver}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      list.innerHTML = html;
+      updateBadges();
+    }
+
+    function updateBadges() {
+      const sellingCount = dataModel.selling.length;
+      const cookingCount = dataModel.cooking.length;
+
+      const sBadge = document.getElementById('badge-selling');
+      sBadge.textContent = sellingCount;
+      sBadge.style.display = sellingCount > 0 ? 'flex' : 'none';
+
+      const cBadge = document.getElementById('badge-cooking');
+      cBadge.textContent = cookingCount;
+      cBadge.style.display = cookingCount > 0 ? 'flex' : 'none';
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      renderOrders('selling');
+    });
+  </script>
+</body>
+</html>
