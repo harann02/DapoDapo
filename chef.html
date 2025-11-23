@@ -132,63 +132,130 @@
     }
     .content::-webkit-scrollbar { display: none; }
 
-    /* Wallet Card */
-    .wallet-card {
-      background: linear-gradient(135deg, #2e7d32, #4CAF50);
-      border-radius: 20px;
-      padding: 24px;
-      color: white;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
-      position: relative;
-      overflow: hidden;
+    /* --- GAMIFICATION CARD (New) --- */
+    .level-card {
+        background: linear-gradient(135deg, #4CAF50, #2E7D32);
+        border-radius: 20px;
+        padding: 20px;
+        color: white;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 20px rgba(76, 175, 80, 0.25);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .level-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
     }
 
-    .wallet-card::after {
-      content: '';
-      position: absolute;
-      top: -20px;
-      right: -20px;
-      width: 100px;
-      height: 100px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 50%;
+    .level-info h3 { margin: 0; font-size: 18px; font-weight: 800; }
+    .level-info span { font-size: 12px; opacity: 0.9; font-weight: 600; }
+
+    .streak-badge {
+        background: rgba(255,255,255,0.25);
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        backdrop-filter: blur(4px);
+    }
+
+    .xp-container {
+        margin-bottom: 8px;
+    }
+    
+    .xp-bar-bg {
+        height: 8px;
+        background: rgba(255,255,255,0.3);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .xp-bar-fill {
+        height: 100%;
+        background: white;
+        width: 75%; /* Dynamic width */
+        border-radius: 4px;
+    }
+
+    .xp-text {
+        font-size: 11px;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 4px;
+    }
+
+    .achievements-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .achievement {
+        width: 32px; height: 32px;
+        background: white;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: #FF9800;
+        font-size: 14px;
+        position: relative;
+    }
+    .achievement::after {
+        content: '🏆';
+        position: absolute;
+        top: -5px; right: -5px;
+        font-size: 10px;
+    }
+
+    /* Wallet Card */
+    .wallet-card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      color: #1e293b;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #e2e8f0;
+    }
+
+    .wallet-left {
+        display: flex;
+        flex-direction: column;
     }
 
     .wallet-label {
-      font-size: 13px;
-      opacity: 0.9;
-      margin-bottom: 4px;
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 2px;
     }
 
     .wallet-balance {
-      font-size: 32px;
+      font-size: 24px;
       font-weight: 700;
-      margin-bottom: 16px;
+      color: #1e293b;
     }
 
-    .wallet-stats {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .w-stat-item h4 { font-size: 16px; font-weight: 600; }
-    .w-stat-item p { font-size: 12px; opacity: 0.8; }
-
-    .withdraw-btn {
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.4);
-      color: white;
+    .withdraw-btn-sm {
+      background: #f1f5f9;
+      color: #1e293b;
       padding: 8px 16px;
       border-radius: 12px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      backdrop-filter: blur(4px);
+      border: none;
     }
 
     /* Quick Actions Grid */
@@ -335,7 +402,7 @@
       font-size: 15px;
       color: #1e293b;
     }
-
+    
     .co-price {
         font-size: 12px;
         color: #4CAF50;
@@ -352,7 +419,7 @@
       font-weight: 600;
       white-space: nowrap;
     }
-
+    
     .co-time-badge.cooking {
         background: #e3f2fd;
         color: #2196f3;
@@ -369,7 +436,7 @@
       justify-content: space-between;
       margin-bottom: 4px;
     }
-
+    
     .co-stat-highlight {
       color: #4CAF50;
       font-weight: 700;
@@ -382,7 +449,7 @@
       border-radius: 3px;
       overflow: hidden;
     }
-
+    
     .progress-bar {
       height: 100%;
       background: linear-gradient(90deg, #4CAF50, #8BC34A);
@@ -400,13 +467,13 @@
     .ready-item .co-content {
       display: block;
     }
-
+    
     .ready-header {
       display: flex;
       justify-content: space-between;
       margin-bottom: 8px;
     }
-
+    
     .ready-id { font-weight: 700; color: #1e293b; }
     .ready-time { font-size: 12px; color: #64748b; }
 
@@ -648,25 +715,43 @@
 
     <!-- Scrollable Content -->
     <div class="content">
+      
+      <!-- GAMIFICATION CARD -->
+      <div class="level-card">
+          <div class="level-header">
+              <div class="level-info">
+                  <h3>Neighbourhood Star</h3>
+                  <span>Level 4 Chef</span>
+              </div>
+              <div class="streak-badge"><i class="fas fa-fire" style="color:#FF5722;"></i> 12 Day Streak</div>
+          </div>
+          <div class="xp-container">
+              <div class="xp-bar-bg">
+                  <div class="xp-bar-fill"></div>
+              </div>
+              <div class="xp-text">
+                  <span>150 XP to Master Chef</span>
+                  <span>75%</span>
+              </div>
+          </div>
+          <div style="font-size:11px; margin-top:4px; opacity:0.9;">
+              Next Reward: <i class="fas fa-percentage"></i> <b>Fee drops to 5%</b>
+          </div>
+          <div class="achievements-row">
+              <div class="achievement"><i class="fas fa-bolt"></i></div>
+              <div class="achievement"><i class="fas fa-star"></i></div>
+              <div class="achievement"><i class="fas fa-utensils"></i></div>
+          </div>
+      </div>
 
-      <!-- Wallet Card -->
+      <!-- Simplified Wallet Card -->
       <div class="wallet-card">
-        <div class="wallet-label">Total Balance</div>
-        <div class="wallet-balance" id="walletBalanceDisplay">RM 482.50</div>
-
-        <div class="wallet-stats">
-          <div class="w-stat-item">
-            <h4>RM 124.00</h4>
-            <p>Today's Sales</p>
-          </div>
-          <div class="w-stat-item">
-            <h4>12</h4>
-            <p>Orders Done</p>
-          </div>
+        <div class="wallet-left">
+            <div class="wallet-label">Available Balance</div>
+            <div class="wallet-balance" id="walletBalanceDisplay">RM 482.50</div>
         </div>
-
-        <button class="withdraw-btn" onclick="openWithdrawModal()">
-          <i class="fas fa-wallet"></i> Withdraw Funds
+        <button class="withdraw-btn-sm" onclick="openWithdrawModal()">
+          <i class="fas fa-arrow-right"></i> Withdraw
         </button>
       </div>
 
@@ -735,7 +820,7 @@
     <div class="modal-content">
         <div class="modal-close" onclick="closeAddDishModal()">&times;</div>
         <h3 class="modal-title">Add New Dish</h3>
-
+        
         <!-- Image Upload -->
         <div class="image-upload-container" id="imageUploadArea" onclick="document.getElementById('dishImageInput').click()">
             <div class="image-preview-content">
@@ -795,7 +880,7 @@
           <div style="margin-bottom:20px; text-align:center; color:#64748b; font-size:13px;">
               Available Balance: <span style="color:#1e293b; font-weight:700;" id="modalWalletBalance">RM 482.50</span>
           </div>
-
+          
           <div class="form-group">
               <label class="form-label">Amount (RM)</label>
               <input type="number" class="form-input" id="withdrawAmount" placeholder="0.00">
@@ -825,11 +910,11 @@
       <div class="modal-content" style="max-height:85vh;">
           <div class="modal-close" onclick="closeMenuModal()">&times;</div>
           <h3 class="modal-title">My Dish Catalog</h3>
-
+          
           <div id="menuList">
               <!-- Populated by JS -->
           </div>
-
+          
           <button class="btn btn-outline" style="width:100%; margin-top:15px;" onclick="openAddDishModal(); closeMenuModal();">
               <i class="fas fa-plus"></i> Add New Dish
           </button>
@@ -878,7 +963,7 @@
       <div class="modal-content">
           <div class="modal-close" onclick="closeInsights()">&times;</div>
           <h3 class="modal-title">Weekly Insights</h3>
-
+          
           <div class="chart-container">
               <div class="chart-bar-group"><div class="chart-bar" style="height:40%"></div><div class="chart-label">Mon</div></div>
               <div class="chart-bar-group"><div class="chart-bar" style="height:60%"></div><div class="chart-label">Tue</div></div>
@@ -992,7 +1077,7 @@
         const now = new Date();
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         document.getElementById('dishDeadline').value = now.toISOString().slice(0,16);
-
+        
         document.getElementById('addDishModal').classList.add('active');
     }
 
@@ -1006,7 +1091,7 @@
 
         document.getElementById('ordersModalTitle').textContent = `Orders for ${dish.name}`;
         const list = document.getElementById('buyersList');
-
+        
         if(!dish.buyers || dish.buyers.length === 0) {
             list.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:20px;">No buyers yet.</p>';
         } else {
@@ -1023,7 +1108,7 @@
                 </div>
             `).join('');
         }
-
+        
         document.getElementById('ordersModal').classList.add('active');
     }
 
@@ -1084,14 +1169,14 @@
     function previewImage(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
-
+            
             reader.onload = function(e) {
                 uploadedImage = e.target.result;
                 const area = document.getElementById('imageUploadArea');
                 area.style.backgroundImage = `url(${e.target.result})`;
                 area.classList.add('preview-active');
             }
-
+            
             reader.readAsDataURL(input.files[0]);
         }
     }
@@ -1130,7 +1215,7 @@
         dataModel.selling.unshift(newDish);
         menuCatalog.push(newDish); // Add to master menu too
         closeAddDishModal();
-
+        
         // Reset form
         document.getElementById('dishName').value = '';
         document.getElementById('dishPrice').value = '';
@@ -1149,15 +1234,15 @@
         const index = dataModel.selling.findIndex(d => d.id === id);
         if (index > -1) {
             const dish = dataModel.selling[index];
-
+            
             // Remove from Selling
             dataModel.selling.splice(index, 1);
-
+            
             // Add to Cooking (add status prop)
             dish.status = "Cooking";
             dish.startTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             dataModel.cooking.unshift(dish);
-
+            
             // Force Update UI
             updateBadges();
             switchTab('cooking'); // Auto switch to show user where it went
@@ -1196,7 +1281,7 @@
                   </div>
                   <div class="co-time-badge"><i class="far fa-clock"></i> ${dish.deadlineDisplay}</div>
                 </div>
-
+                
                 <div class="co-stats">
                   <div class="co-stat-text">
                     <span class="co-stat-highlight">${dish.portionSold}/${dish.portionSet} Sold</span>
@@ -1224,7 +1309,7 @@
                   <div class="co-dish-name">${dish.name}</div>
                   <div class="co-time-badge cooking">Cooking</div>
                 </div>
-
+                
                 <div style="font-size:12px; color:#64748b; margin:6px 0;">
                     Started at: ${dish.startTime || 'Just now'} <br>
                     Preparing: ${dish.portionSold} portions
